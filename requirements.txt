@@ -1,0 +1,11 @@
+torch
+torchvision
+matplotlib
+numpy
+pandas
+scikit-learn
+scipy
+tqdm      
+ipykernel>=6.0
+Pillow
+

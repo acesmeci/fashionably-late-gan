@@ -1,0 +1,19 @@
+# Ignore training artifacts
+*.pth
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+
+# Training output
+samples/
+checkpoints/
+*.png
+
