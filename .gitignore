@@ -17,3 +17,7 @@ samples/
 checkpoints/
 *.png
 
+# Torch datasets
+data/FashionMNIST/
+
+/logs.md
