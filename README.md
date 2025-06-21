@@ -9,7 +9,7 @@ This demo was created for the Understanding Deep Learning seminar at the Institu
 ### 🔧 Setup
 
 ```bash
-git clone https://github.com/yourusername/fashionably-late-gan.git
+git clone https://github.com/acesmeci/fashionably-late-gan.git
 cd fashionably-late-gan
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
