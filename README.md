@@ -70,6 +70,7 @@ All models are kept **CPU-friendly** and trainable in under ~10–15 minutes eac
 
 ## 📚 References
 
+- Prince, S. J. (2023). Understanding deep learning. MIT press.
 - Xiao, H., Rasul, K., & Vollgraf, R. (2017). Fashion-MNIST: A Novel Image Dataset for Benchmarking Machine Learning Algorithms. *arXiv preprint arXiv:1708.07747*.
 - Mirza, M., & Osindero, S. (2014). Conditional Generative Adversarial Nets. *arXiv preprint arXiv:1411.1784*.
 - Radford, A., Metz, L., & Chintala, S. (2016). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks. *ICLR*.
