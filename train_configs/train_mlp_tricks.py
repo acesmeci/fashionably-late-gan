@@ -4,8 +4,9 @@ from torch import nn, optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
-from models.generator import Generator
-from models.discriminator import Discriminator
+
+from models.generator_tricks import Generator
+from models.discriminator_alltricks import Discriminator
 
 # Hyperparameters
 batch_size = 64
@@ -16,13 +17,12 @@ embedding_dim = 10
 image_size = 28
 num_classes = 10
 
-# Output directory
-output_dir = "samples/label_smooth"
+output_dir = "samples/mlp_tricks"
 os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load dataset
+# Dataset
 data = datasets.FashionMNIST(
     root="./data",
     download=True,
@@ -33,7 +33,7 @@ data = datasets.FashionMNIST(
 )
 dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
-# Initialize models
+# Models
 G = Generator(z_dim, embedding_dim, num_classes).to(device)
 D = Discriminator(embedding_dim, num_classes).to(device)
 
@@ -41,19 +41,16 @@ criterion = nn.BCELoss()
 g_optimizer = optim.Adam(G.parameters(), lr=lr, betas=(0.5, 0.999))
 d_optimizer = optim.Adam(D.parameters(), lr=lr, betas=(0.5, 0.999))
 
-# Fixed noise and labels
 fixed_noise = torch.randn(10, z_dim).to(device)
 fixed_labels = torch.arange(0, 10).to(device)
 
-# Training loop
 for epoch in range(epochs):
     for i, (real_images, labels) in enumerate(dataloader):
         real_images = real_images.to(device)
         labels = labels.to(device)
         batch_size = real_images.size(0)
 
-        # Label smoothing here!
-        real_targets = torch.full((batch_size, 1), 0.9, device=device)
+        real_targets = torch.ones(batch_size, 1).to(device)
         fake_targets = torch.zeros(batch_size, 1).to(device)
 
         # === Train Discriminator ===
@@ -68,17 +65,18 @@ for epoch in range(epochs):
         d_loss.backward()
         d_optimizer.step()
 
-        # === Train Generator ===
+        # === Train Generator (with feature matching) ===
         z = torch.randn(batch_size, z_dim).to(device)
         fake_images = G(z, labels)
-        preds = D(fake_images, labels)
+        _, real_features = D(real_images, labels, return_features=True)
+        _, fake_features = D(fake_images, labels, return_features=True)
 
-        g_loss = criterion(preds, real_targets)  # Generator still wants to fool D
+        fm_loss = nn.functional.l1_loss(fake_features, real_features.detach())
         G.zero_grad()
-        g_loss.backward()
+        fm_loss.backward()
         g_optimizer.step()
 
-    print(f"[Epoch {epoch+1}/{epochs}]  D Loss: {d_loss.item():.4f} | G Loss: {g_loss.item():.4f}")
+    print(f"[Epoch {epoch+1}/{epochs}]  D Loss: {d_loss.item():.4f} | G (FM) Loss: {fm_loss.item():.4f}")
 
     with torch.no_grad():
         generated = G(fixed_noise, fixed_labels)

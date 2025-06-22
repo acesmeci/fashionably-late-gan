@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
 from models.generator import Generator
-from models.discriminator_minibatch import Discriminator
+from models.discriminator import Discriminator
 
 # Hyperparameters
 batch_size = 64
@@ -13,13 +13,16 @@ z_dim = 100
 lr = 2e-4
 epochs = 10
 embedding_dim = 10
+image_size = 28
 num_classes = 10
 
-output_dir = "samples/minibatch_disc"
+# Create output directory for baseline model
+output_dir = "samples/mlp_stable"
 os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+# Load dataset
 data = datasets.FashionMNIST(
     root="./data",
     download=True,
@@ -30,6 +33,7 @@ data = datasets.FashionMNIST(
 )
 dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
+# Initialize models
 G = Generator(z_dim, embedding_dim, num_classes).to(device)
 D = Discriminator(embedding_dim, num_classes).to(device)
 
@@ -37,9 +41,11 @@ criterion = nn.BCELoss()
 g_optimizer = optim.Adam(G.parameters(), lr=lr, betas=(0.5, 0.999))
 d_optimizer = optim.Adam(D.parameters(), lr=lr, betas=(0.5, 0.999))
 
+# Fixed noise and labels for consistent visual output
 fixed_noise = torch.randn(10, z_dim).to(device)
 fixed_labels = torch.arange(0, 10).to(device)
 
+# Training loop
 for epoch in range(epochs):
     for i, (real_images, labels) in enumerate(dataloader):
         real_images = real_images.to(device)
@@ -73,6 +79,7 @@ for epoch in range(epochs):
 
     print(f"[Epoch {epoch+1}/{epochs}]  D Loss: {d_loss.item():.4f} | G Loss: {g_loss.item():.4f}")
 
+    # Save fixed generated grid for this epoch
     with torch.no_grad():
         generated = G(fixed_noise, fixed_labels)
         grid = make_grid(generated, nrow=10, normalize=True)

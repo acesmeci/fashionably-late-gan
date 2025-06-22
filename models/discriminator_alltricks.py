@@ -14,7 +14,7 @@ class Discriminator(nn.Module):
         )
 
         self.output_layer = nn.Sequential(
-            nn.Linear(256, 1),
+            nn.Linear(256 + 1, 1),  # +1 for minibatch stddev
             nn.Sigmoid()
         )
 
@@ -24,9 +24,14 @@ class Discriminator(nn.Module):
         x = torch.cat([x, label_embedding], dim=1)
 
         features = self.feature_net(x)
-        output = self.output_layer(features)
+
+        # Add minibatch stddev
+        stddev = features.std(dim=0).mean().unsqueeze(0).expand(x.size(0), 1)
+        combined = torch.cat([features, stddev], dim=1)
+
+        out = self.output_layer(combined)
 
         if return_features:
-            return output, features
+            return out, features
         else:
-            return output
+            return out

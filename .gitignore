@@ -11,6 +11,7 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.env/ 
 
 # Training output
 samples/
@@ -21,3 +22,7 @@ checkpoints/
 data/FashionMNIST/
 
 /logs.md
+
+# Figures
+*.png
+

@@ -4,43 +4,44 @@ from torch import nn, optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import save_image, make_grid
-from models.cnn_generator import CNNGenerator
-from models.cnn_discriminator import CNNDiscriminator
+from models.generator_naive import NaiveGenerator
+from models.discriminator_naive import NaiveDiscriminator
 
 # Hyperparameters
 batch_size = 64
 z_dim = 100
 lr = 2e-4
-epochs = 10 # change to 10 for full training
-embedding_dim = 1
+epochs = 10
+embedding_dim = 10
 num_classes = 10
-output_dir = "samples/cnn"
+output_dir = "samples/mlp_naive"
 os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Data
+# Dataset
 data = datasets.FashionMNIST(
     root="./data",
     download=True,
     transform=transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5])  # Needed for Tanh
+        transforms.Normalize([0.5], [0.5])
     ])
 )
 dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
 # Models
-G = CNNGenerator(z_dim, embedding_dim, num_classes).to(device)
-D = CNNDiscriminator(embedding_dim, num_classes).to(device)
+G = NaiveGenerator(z_dim, embedding_dim, num_classes).to(device)
+D = NaiveDiscriminator(embedding_dim, num_classes).to(device)
 
 criterion = nn.BCELoss()
-g_optimizer = optim.Adam(G.parameters(), lr=lr, betas=(0.5, 0.999))
-d_optimizer = optim.Adam(D.parameters(), lr=lr, betas=(0.5, 0.999))
+g_optimizer = optim.Adam(G.parameters(), lr=lr, betas=(0.9, 0.999))  # Naive betas
+d_optimizer = optim.Adam(D.parameters(), lr=lr, betas=(0.9, 0.999))
 
 fixed_noise = torch.randn(10, z_dim).to(device)
 fixed_labels = torch.arange(0, 10).to(device)
 
+# Training loop
 for epoch in range(epochs):
     for i, (real_images, labels) in enumerate(dataloader):
         real_images = real_images.to(device)

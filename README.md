@@ -1,12 +1,13 @@
 # 🧵 Fashionably Late: Conditional GANs on Fashion-MNIST
 
-This demo was created for the Understanding Deep Learning seminar at the Institute of Cognitive Science, Osnabrück University. It explores why **GANs are difficult to train** — and how classic stabilization tricks improve training dynamics and output quality. The project uses **Conditional GANs (cGANs)** trained on **Fashion-MNIST** and compares both **MLP** and **CNN (DCGAN)** architectures.
+This demo was created for the *Understanding Deep Learning* seminar at the Institute of Cognitive Science, Osnabrück University. It explores why **GANs are difficult to train** — and how classic stabilization tricks improve training dynamics and output quality. The project uses **Conditional GANs (cGANs)** trained on **Fashion-MNIST** and compares both **MLP** and **CNN (DCGAN)** architectures.
 
 ---
 
 ## 📦 Quick Start
 
 ### 🔧 Setup
+Open a terminal and run the following to set up your environment:
 
 ```bash
 git clone https://github.com/acesmeci/fashionably-late-gan.git
@@ -18,7 +19,15 @@ pip install -r requirements.txt
 
 ### 🚀 Training a Model
 
-Each model has its own training script under `train_configs/`. For example:
+Each model has its own training script under `train_configs/`.
+Run the following training scripts from your terminal. Each model saves generated `.png` images under `samples/`.
+
+```bash
+python -m train_configs.train_mlp_naive
+python -m train_configs.train_mlp_stable
+python -m train_configs.train_mlp_tricks
+python -m train_configs.train_dcgan
+```
 
 ```bash
 python -m train_configs.train_baseline
@@ -27,8 +36,8 @@ python -m train_configs.train_baseline
 This saves generated `.png` images under:
 
 ```bash
-samples/baseline/epoch_1.png
-samples/baseline/epoch_2.png
+samples/mlp_naive/epoch_1.png
+samples/mlp_naive/epoch_2.png
 ...
 ```
 
@@ -36,10 +45,9 @@ Run any of the following:
 
 | Command | Description |
 | --- | --- |
-| `train_baseline.py` | Basic MLP cGAN |
-| `train_label_smooth.py` | Adds label smoothing |
-| `train_feature_match.py` | Adds feature matching (Salimans et al.) |
-| `train_minibatch_disc.py` | Adds minibatch discrimination trick |
+| `train_mlp_naive.py` | Basic MLP cGAN |
+| `train_mlp_stable.py` | Adds BatchNorm, LeakyReLU, low-momentum Adam |
+| `train_feature_match.py` | Adds feature matching + minibatch discrimination |
 | `train_cnn.py` | Full Conditional DCGAN |
 
 ---
@@ -52,7 +60,8 @@ After training, open the notebook:
 visualize_results.ipynb
 ```
 
-This will show side-by-side comparisons for each model’s output at **Epoch 1 and Epoch 10**. The notebook pulls images from each `samples/` subfolder.
+It displays side-by-side samples for each model at **Epoch 1** and **Epoch 10**, with clear headings. The notebook pulls images from each `samples/` subfolder.
+**Note:** Fashion-MNIST class labels (0–9) are listed in the notebook for interpretability.
 
 ---
 
@@ -60,9 +69,10 @@ This will show side-by-side comparisons for each model’s output at **Epoch 1 a
 
 This project illustrates:
 
-- How **different GAN tricks** affect learning dynamics
-- How **model capacity** (MLP vs. CNN) influences visual quality
-- Where GAN training fails — and how to **visually debug it**
+- How different **GAN stabilization tricks** affect training and image quality
+- That **more tricks ≠ always better** — failure cases included!
+- The importance of **architecture choices** (MLP vs CNN)
+- How to visually inspect and debug GAN outputs
 
 All models are kept **CPU-friendly** and trainable in under ~10–15 minutes each.
 
