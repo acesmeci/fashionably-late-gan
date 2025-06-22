@@ -29,10 +29,6 @@ python -m train_configs.train_mlp_tricks
 python -m train_configs.train_dcgan
 ```
 
-```bash
-python -m train_configs.train_baseline
-```
-
 This saves generated `.png` images under:
 
 ```bash
