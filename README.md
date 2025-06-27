@@ -43,8 +43,8 @@ Run any of the following:
 | --- | --- |
 | `train_mlp_naive.py` | Basic MLP cGAN |
 | `train_mlp_stable.py` | Adds BatchNorm, LeakyReLU, low-momentum Adam |
-| `train_feature_match.py` | Adds feature matching + minibatch discrimination |
-| `train_cnn.py` | Full Conditional DCGAN |
+| `train_mlp_tricks.py` | Adds feature matching + minibatch discrimination |
+| `train_dcgan.py` | Full Conditional DCGAN |
 
 ---
 
