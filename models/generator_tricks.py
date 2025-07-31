@@ -1,3 +1,8 @@
+"""
+Generator with BatchNorm used for feature matching and minibatch disc tricks.
+Identical to stable Generator architecture.
+"""
+
 import torch
 import torch.nn as nn
 

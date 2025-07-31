@@ -37,7 +37,7 @@ samples/mlp_naive/epoch_2.png
 ...
 ```
 
-Run any of the following:
+Model descriptions:
 
 | Command | Description |
 | --- | --- |

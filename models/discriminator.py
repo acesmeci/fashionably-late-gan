@@ -1,7 +1,16 @@
+# Improved MLP Discriminator with LeakyReLU and stable architecture.
+
 import torch
 import torch.nn as nn
 
 class Discriminator(nn.Module):
+    """
+    Stable MLP Discriminator with LeakyReLU.
+
+    Args:
+        embed_dim (int): Label embedding size.
+        num_classes (int): Number of Fashion-MNIST classes.
+    """
     def __init__(self, embed_dim, num_classes):
         super(Discriminator, self).__init__()
         self.label_emb = nn.Embedding(num_classes, embed_dim)

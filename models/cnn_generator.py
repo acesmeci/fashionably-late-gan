@@ -1,7 +1,17 @@
+# DCGAN-style CNN Generator for Conditional GANs on Fashion-MNIST.
+
 import torch
 import torch.nn as nn
 
 class CNNGenerator(nn.Module):
+    """
+    Conditional DCGAN Generator using transposed convolutions.
+
+    Args:
+        z_dim (int): Latent noise dimension.
+        embed_dim (int): Label embedding size.
+        num_classes (int): Number of Fashion-MNIST classes.
+    """
     def __init__(self, z_dim, embed_dim, num_classes):
         super().__init__()
         self.z_dim = z_dim

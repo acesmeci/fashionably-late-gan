@@ -1,7 +1,18 @@
+# Improved MLP Generator with BatchNorm for Conditional GANs.
+# Uses architectural stabilization tricks from the DCGAN paper.
+
 import torch
 import torch.nn as nn
 
 class Generator(nn.Module):
+    """
+    MLP Generator with BatchNorm (Stable variant).
+
+    Args:
+        z_dim (int): Latent vector size.
+        embed_dim (int): Label embedding size.
+        num_classes (int): Number of Fashion-MNIST classes.
+    """
     def __init__(self, z_dim, embed_dim, num_classes):
         super(Generator, self).__init__()
         self.label_emb = nn.Embedding(num_classes, embed_dim)

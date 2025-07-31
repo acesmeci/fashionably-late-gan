@@ -1,3 +1,8 @@
+"""
+Training script for the trick-enhanced MLP Conditional GAN on Fashion-MNIST.
+Combines Feature Matching (Salimans et al.) and Minibatch Discrimination.
+"""
+
 import os
 import torch
 from torch import nn, optim
@@ -22,7 +27,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Dataset
+# Dataset: Fashion-MNIST (normalized to [-1, 1] for Tanh)
 data = datasets.FashionMNIST(
     root="./data",
     download=True,
@@ -33,17 +38,20 @@ data = datasets.FashionMNIST(
 )
 dataloader = DataLoader(data, batch_size=batch_size, shuffle=True)
 
-# Models
+# Models: Conditional MLP Generator and Discriminator (from tricks)
 G = Generator(z_dim, embedding_dim, num_classes).to(device)
 D = Discriminator(embedding_dim, num_classes).to(device)
 
+# Loss and Optimizers
 criterion = nn.BCELoss()
 g_optimizer = optim.Adam(G.parameters(), lr=lr, betas=(0.5, 0.999))
 d_optimizer = optim.Adam(D.parameters(), lr=lr, betas=(0.5, 0.999))
 
+# Fixed noise and labels for consistent output visualization
 fixed_noise = torch.randn(10, z_dim).to(device)
 fixed_labels = torch.arange(0, 10).to(device)
 
+# Training Loop
 for epoch in range(epochs):
     for i, (real_images, labels) in enumerate(dataloader):
         real_images = real_images.to(device)
@@ -53,7 +61,7 @@ for epoch in range(epochs):
         real_targets = torch.ones(batch_size, 1).to(device)
         fake_targets = torch.zeros(batch_size, 1).to(device)
 
-        # === Train Discriminator ===
+        # Train Discriminator
         z = torch.randn(batch_size, z_dim).to(device)
         fake_images = G(z, labels)
 
@@ -65,7 +73,7 @@ for epoch in range(epochs):
         d_loss.backward()
         d_optimizer.step()
 
-        # === Train Generator (with feature matching) ===
+        # Train Generator (with feature matching)
         z = torch.randn(batch_size, z_dim).to(device)
         fake_images = G(z, labels)
         _, real_features = D(real_images, labels, return_features=True)
@@ -76,6 +84,7 @@ for epoch in range(epochs):
         fm_loss.backward()
         g_optimizer.step()
 
+    # Logging and saving images
     print(f"[Epoch {epoch+1}/{epochs}]  D Loss: {d_loss.item():.4f} | G (FM) Loss: {fm_loss.item():.4f}")
 
     with torch.no_grad():

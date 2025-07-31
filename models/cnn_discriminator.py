@@ -1,7 +1,16 @@
+# DCGAN-style CNN Discriminator for Conditional GANs.
+
 import torch
 import torch.nn as nn
 
 class CNNDiscriminator(nn.Module):
+    """
+    Conditional DCGAN Discriminator.
+
+    Args:
+        embed_dim (int): Size of label embedding.
+        num_classes (int): Number of Fashion-MNIST classes.
+    """
     def __init__(self, embed_dim, num_classes):
         super().__init__()
         self.label_emb = nn.Embedding(num_classes, embed_dim)

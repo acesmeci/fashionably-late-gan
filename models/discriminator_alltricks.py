@@ -1,7 +1,17 @@
+# Discriminator with both Feature Matching and Minibatch Discrimination.
+# Outputs both logits and internal features when requested.
+
 import torch
 import torch.nn as nn
 
 class Discriminator(nn.Module):
+    """
+    Discriminator with Feature Matching + Minibatch Discrimination.
+
+    Args:
+        embed_dim (int): Label embedding size.
+        num_classes (int): Number of classes.
+    """
     def __init__(self, embed_dim, num_classes):
         super(Discriminator, self).__init__()
         self.label_emb = nn.Embedding(num_classes, embed_dim)
@@ -19,6 +29,16 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, x, labels, return_features=False):
+        """
+        Args:
+            x (Tensor): Input image (batch_size, 1, 28, 28)
+            labels (Tensor): Class labels
+            return_features (bool): If True, also returns feature layer output.
+
+        Returns:
+            Tensor: Discriminator output
+            Optional[Tensor]: Feature representation before final layer
+        """
         x = x.view(x.size(0), -1)
         label_embedding = self.label_emb(labels)
         x = torch.cat([x, label_embedding], dim=1)
